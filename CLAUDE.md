@@ -46,6 +46,6 @@ pattern, and configuration.
 ## Conventions
 
 - Fail loudly if Joern server is not reachable
-- All queries go through the async POST /query → poll /result/{uuid} pattern
+- All queries go through the synchronous POST /query-sync endpoint
 - Environment variables for config (JOERN_HOST, JOERN_PORT, timeouts)
 - No process management — joern-mcp does NOT start/stop Joern
