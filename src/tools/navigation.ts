@@ -71,6 +71,46 @@ export function registerNavigationTools(
     }
   });
 
+  server.registerTool("get_base_classes", {
+    description:
+      "Get parent/base classes of a class (transitive). Useful for understanding inheritance chains.",
+    inputSchema: {
+      className: z.string().describe("Name of the class to get base classes for"),
+    },
+  }, async ({ className }) => {
+    try {
+      const result = await client.query(cpgql.getBaseClasses(className));
+      return {
+        content: [{ type: "text" as const, text: result.parsed }],
+      };
+    } catch (err: unknown) {
+      return {
+        content: [{ type: "text" as const, text: String(err) }],
+        isError: true,
+      };
+    }
+  });
+
+  server.registerTool("get_derived_classes", {
+    description:
+      "Get derived/child classes of a class (transitive). Useful for finding all implementations.",
+    inputSchema: {
+      className: z.string().describe("Name of the class to get derived classes for"),
+    },
+  }, async ({ className }) => {
+    try {
+      const result = await client.query(cpgql.getDerivedClasses(className));
+      return {
+        content: [{ type: "text" as const, text: result.parsed }],
+      };
+    } catch (err: unknown) {
+      return {
+        content: [{ type: "text" as const, text: String(err) }],
+        isError: true,
+      };
+    }
+  });
+
   server.registerTool("get_parameters", {
     description:
       "Get parameter types and names for a method. Returns parameter name, type, and index.",

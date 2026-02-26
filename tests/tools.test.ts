@@ -40,20 +40,23 @@ async function setup(client?: JoernClient) {
 }
 
 describe("tool discovery", () => {
-  it("lists all 16 tools", async () => {
+  it("lists all 19 tools", async () => {
     const { mcpClient } = await setup();
     const { tools } = await mcpClient.listTools();
 
-    expect(tools).toHaveLength(16);
+    expect(tools).toHaveLength(19);
 
     const names = tools.map((t) => t.name).sort();
     expect(names).toEqual([
+      "check_connection",
       "close_project",
       "find_vulnerabilities",
+      "get_base_classes",
       "get_callees",
       "get_callers",
       "get_calls",
       "get_data_flows",
+      "get_derived_classes",
       "get_methods",
       "get_parameters",
       "get_source",
@@ -178,6 +181,60 @@ describe("navigation tools", () => {
 
     const query = (mock.query as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(query).toContain('.name("process").parameter');
+  });
+});
+
+describe("class hierarchy tools", () => {
+  it("get_base_classes queries base type declarations", async () => {
+    const { mcpClient, mock } = await setup();
+    await mcpClient.callTool({
+      name: "get_base_classes",
+      arguments: { className: "HttpServlet" },
+    });
+
+    const query = (mock.query as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(query).toContain('.name("HttpServlet").baseTypeDecl');
+  });
+
+  it("get_derived_classes queries derived type declarations", async () => {
+    const { mcpClient, mock } = await setup();
+    await mcpClient.callTool({
+      name: "get_derived_classes",
+      arguments: { className: "Sanitizer" },
+    });
+
+    const query = (mock.query as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(query).toContain('.name("Sanitizer").derivedTypeDecl');
+  });
+});
+
+describe("connection tools", () => {
+  it("check_connection returns success when healthy", async () => {
+    const { mcpClient } = await setup();
+    const result = await mcpClient.callTool({
+      name: "check_connection",
+      arguments: {},
+    });
+
+    expect(result.isError).toBeFalsy();
+    const text = (result.content as Array<{ type: string; text: string }>)[0].text;
+    expect(text).toContain("reachable");
+  });
+
+  it("check_connection returns error when unhealthy", async () => {
+    const client = mockClient();
+    (client.healthCheck as ReturnType<typeof vi.fn>).mockResolvedValue(false);
+    const { mcpClient } = await setup(client);
+
+    const result = await mcpClient.callTool({
+      name: "check_connection",
+      arguments: {},
+    });
+
+    expect(result.isError).toBe(true);
+    const text = (result.content as Array<{ type: string; text: string }>)[0].text;
+    expect(text).toContain("not reachable");
+    expect(text).toContain("joern --server");
   });
 });
 

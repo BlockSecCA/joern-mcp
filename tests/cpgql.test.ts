@@ -79,6 +79,21 @@ describe("navigation queries", () => {
   });
 });
 
+describe("class hierarchy queries", () => {
+  it("getBaseClasses", () => {
+    expect(cpgql.getBaseClasses("Foo")).toContain('.name("Foo").baseTypeDecl');
+  });
+
+  it("getDerivedClasses", () => {
+    expect(cpgql.getDerivedClasses("Foo")).toContain('.name("Foo").derivedTypeDecl');
+  });
+
+  it("escapes special characters in class names", () => {
+    expect(cpgql.getBaseClasses('Foo"Bar')).toContain('Foo\\"Bar');
+    expect(cpgql.getDerivedClasses('Baz\\Qux')).toContain('Baz\\\\Qux');
+  });
+});
+
 describe("security queries", () => {
   it("taintAnalysis constructs source/sink flow", () => {
     const q = cpgql.taintAnalysis(

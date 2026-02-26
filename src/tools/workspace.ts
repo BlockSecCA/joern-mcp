@@ -8,6 +8,28 @@ export function registerWorkspaceTools(
   server: McpServer,
   client: JoernClient,
 ): void {
+  server.registerTool("check_connection", {
+    description:
+      "Check if Joern server is reachable. Returns server status. Use this before starting analysis.",
+  }, async () => {
+    const healthy = await client.healthCheck();
+    if (healthy) {
+      return {
+        content: [{
+          type: "text" as const,
+          text: `Joern server is reachable at ${config.host}:${config.port}`,
+        }],
+      };
+    }
+    return {
+      content: [{
+        type: "text" as const,
+        text: `Joern server is not reachable at ${config.host}:${config.port}. Make sure Joern is running: joern --server`,
+      }],
+      isError: true,
+    };
+  });
+
   server.registerTool("import_code", {
     description:
       "Import a codebase into Joern for analysis. Builds the Code Property Graph (CPG). This is slow (minutes for large projects).",

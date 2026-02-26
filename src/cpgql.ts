@@ -65,6 +65,16 @@ export function getParameters(methodName: string): string {
   return `cpg.method.name("${escapeString(methodName)}").parameter.map(p => (p.name, p.typeFullName, p.index)).l`;
 }
 
+// --- Class Hierarchy ---
+
+export function getBaseClasses(className: string): string {
+  return `cpg.typeDecl.name("${escapeString(className)}").baseTypeDecl.map(t => (t.name, t.fullName, t.filename)).l`;
+}
+
+export function getDerivedClasses(className: string): string {
+  return `cpg.typeDecl.name("${escapeString(className)}").derivedTypeDecl.map(t => (t.name, t.fullName, t.filename)).l`;
+}
+
 // --- Security ---
 // source and sink are CPGQL expressions like: method.name("gets").parameter
 
