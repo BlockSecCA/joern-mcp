@@ -98,6 +98,24 @@ query("cpg.method.name.l")
 | `get_callees` | Find all methods called by a method |
 | `get_parameters` | Get parameter types and names |
 
+## Claude Code Skill
+
+The repo includes a Claude Code skill at `.claude/skills/joern-analysis/SKILL.md` that guides the full security analysis workflow — from importing code through vulnerability scanning to data flow tracing.
+
+To make it available globally, symlink it:
+
+```bash
+ln -s /path/to/joern-mcp/.claude/skills/joern-analysis ~/.claude/skills/joern-analysis
+```
+
+Then invoke it in any Claude Code session with `/joern-analysis`. The skill walks through the standard workflow:
+
+1. **Connect and import** — verify Joern is up, build the CPG
+2. **Explore** — list methods, types, call sites
+3. **Navigate** — trace callers/callees, class hierarchies
+4. **Analyze** — run vulnerability scans, taint analysis, data flow tracing
+5. **Raw queries** — arbitrary CPGQL for anything the structured tools don't cover
+
 ## Development
 
 ```bash
