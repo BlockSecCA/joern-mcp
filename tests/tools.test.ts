@@ -254,17 +254,53 @@ describe("security tools", () => {
     expect(query).toContain("sink.reachableByFlows(source).p");
   });
 
-  it("find_vulnerabilities runs with import timeout", async () => {
+  it("find_vulnerabilities runs all categories by default", async () => {
     const { mcpClient, mock } = await setup();
-    await mcpClient.callTool({
+    const result = await mcpClient.callTool({
       name: "find_vulnerabilities",
       arguments: {},
     });
 
-    expect(mock.query).toHaveBeenCalledWith(
-      expect.stringContaining("run.ossdataflow"),
-      expect.any(Number),
-    );
+    // Should call query once per category (6 categories)
+    expect(mock.query).toHaveBeenCalledTimes(6);
+
+    const text = (result.content as Array<{ type: string; text: string }>)[0].text;
+    expect(text).toContain("## Dangerous Function Calls");
+    expect(text).toContain("## SQL Query Construction");
+    expect(text).toContain("## Summary");
+  });
+
+  it("find_vulnerabilities filters by categories", async () => {
+    const { mcpClient, mock } = await setup();
+    await mcpClient.callTool({
+      name: "find_vulnerabilities",
+      arguments: { categories: ["dangerous_calls"] },
+    });
+
+    expect(mock.query).toHaveBeenCalledTimes(1);
+    const query = (mock.query as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(query).toContain("cpg.call.name");
+    expect(query).toContain("eval");
+  });
+
+  it("find_vulnerabilities handles partial failures", async () => {
+    let callCount = 0;
+    const client = mockClient(async () => {
+      callCount++;
+      if (callCount === 2) throw new JoernQueryError("syntax error");
+      return { raw: "List()", parsed: "List()", uuid: "mock" };
+    });
+    const { mcpClient } = await setup(client);
+
+    const result = await mcpClient.callTool({
+      name: "find_vulnerabilities",
+      arguments: {},
+    });
+
+    const text = (result.content as Array<{ type: string; text: string }>)[0].text;
+    expect(text).toContain("Error:");
+    expect(text).toContain("No findings.");
+    expect(result.isError).toBeFalsy();
   });
 });
 

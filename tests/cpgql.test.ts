@@ -121,8 +121,28 @@ describe("security queries", () => {
     expect(q).toContain("sink.reachableByFlows(source).p");
   });
 
-  it("findVulnerabilities runs ossdataflow", () => {
-    expect(cpgql.findVulnerabilities()).toContain("run.ossdataflow");
+  it("findVulnerabilities returns all categories by default", () => {
+    const categories = cpgql.findVulnerabilities();
+    expect(categories).toHaveLength(6);
+    for (const cat of categories) {
+      expect(cat).toHaveProperty("key");
+      expect(cat).toHaveProperty("label");
+      expect(cat).toHaveProperty("query");
+      expect(cat.query).toContain("cpg.call");
+    }
+  });
+
+  it("findVulnerabilities filters by key", () => {
+    const categories = cpgql.findVulnerabilities(["dangerous_calls"]);
+    expect(categories).toHaveLength(1);
+    expect(categories[0].key).toBe("dangerous_calls");
+    expect(categories[0].query).toContain("eval");
+  });
+
+  it("VULN_CATEGORY_KEYS matches categories", () => {
+    expect(cpgql.VULN_CATEGORY_KEYS).toEqual(
+      cpgql.VULN_CATEGORIES.map((c) => c.key),
+    );
   });
 });
 

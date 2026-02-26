@@ -130,7 +130,7 @@ Both return `success: true`. The client must inspect `stdout` for error patterns
 
 | Tool | Description |
 |------|-------------|
-| `find_vulnerabilities` | Run `joern-scan` default queries against active CPG |
+| `find_vulnerabilities` | Scan for common vulnerability patterns (dangerous calls, SQL construction, hardcoded credentials, etc.) |
 | `taint_analysis` | Trace data flow from source to sink |
 | `reachable_by` | Check if a sink is reachable from a source |
 | `get_data_flows` | Get all data flow paths between two points |
