@@ -1,5 +1,11 @@
 # joern-mcp
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933.svg)](https://nodejs.org/)
+[![MCP](https://img.shields.io/badge/MCP-Model_Context_Protocol-7c3aed.svg)](https://modelcontextprotocol.io/)
+[![Joern](https://img.shields.io/badge/Joern-CPG_Analysis-e34c26.svg)](https://joern.io/)
+
 MCP server that wraps a local [Joern](https://joern.io) instance for AI-driven code security analysis. Gives Claude Code the ability to import codebases, query the Code Property Graph (CPG), trace data flows, and detect vulnerabilities.
 
 ## Architecture
