@@ -13,7 +13,7 @@ export function importCode(path: string, name: string): string {
 }
 
 export function listProjects(): string {
-  return `workspace.getProjectNames`;
+  return `workspace.projects.map(p => p.projectFile.name).l`;
 }
 
 export function switchProject(name: string): string {
@@ -83,7 +83,7 @@ export function taintAnalysis(source: string, sink: string): string {
 }
 
 export function reachableBy(source: string, sink: string): string {
-  return `val source = cpg.${source}; val sink = cpg.${sink}; sink.reachableBy(source).map(m => (m.name, m.fullName)).l`;
+  return `val source = cpg.${source}; val sink = cpg.${sink}; sink.reachableBy(source).map(n => (n.name, n.code, n.lineNumber.getOrElse(-1))).l`;
 }
 
 export function getDataFlows(source: string, sink: string): string {

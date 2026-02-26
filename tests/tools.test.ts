@@ -111,7 +111,7 @@ describe("workspace tools", () => {
     const { mcpClient, mock } = await setup();
     await mcpClient.callTool({ name: "list_projects", arguments: {} });
 
-    expect(mock.query).toHaveBeenCalledWith("workspace.getProjectNames");
+    expect(mock.query).toHaveBeenCalledWith("workspace.projects.map(p => p.projectFile.name).l");
   });
 
   it("switch_project sends setActiveProject", async () => {

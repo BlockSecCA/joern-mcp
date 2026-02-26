@@ -15,7 +15,7 @@ describe("workspace queries", () => {
   });
 
   it("listProjects returns workspace query", () => {
-    expect(cpgql.listProjects()).toBe("workspace.getProjectNames");
+    expect(cpgql.listProjects()).toBe("workspace.projects.map(p => p.projectFile.name).l");
   });
 
   it("switchProject generates correct CPGQL", () => {

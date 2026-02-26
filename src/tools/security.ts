@@ -102,7 +102,7 @@ Key rules:
 
   server.registerTool("reachable_by", {
     description:
-      "Check if a sink is reachable from a source. Returns the reachable methods (name and fullName). Lighter than taint_analysis — use this to quickly check connectivity before requesting full flow paths. Same source/sink expression syntax as taint_analysis.",
+      "Check if a sink is reachable from a source. Returns the reachable call nodes (name, code, line number). Lighter than taint_analysis — use this to quickly check connectivity before requesting full flow paths. Same source/sink expression syntax as taint_analysis.",
     inputSchema: {
       source: z
         .string()
