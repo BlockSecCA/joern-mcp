@@ -1,6 +1,6 @@
 # joern-mcp
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/BlockSecCA/joern-mcp/releases) [![License](https://img.shields.io/github/license/BlockSecCA/joern-mcp)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![MCP](https://img.shields.io/badge/MCP-Model_Context_Protocol-7c3aed?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48L3N2Zz4=)](https://modelcontextprotocol.io/) [![Joern](https://img.shields.io/badge/Joern-CPG_Analysis-e34c26)](https://joern.io/)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue)](https://github.com/BlockSecCA/joern-mcp/releases) [![License](https://img.shields.io/github/license/BlockSecCA/joern-mcp)](LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![MCP](https://img.shields.io/badge/MCP-Model_Context_Protocol-7c3aed?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48L3N2Zz4=)](https://modelcontextprotocol.io/) [![Joern](https://img.shields.io/badge/Joern-CPG_Analysis-e34c26)](https://joern.io/)
 
 MCP server that wraps a local [Joern](https://joern.io) instance for AI-driven code security analysis. Gives Claude Code the ability to import codebases, query the Code Property Graph (CPG), trace data flows, and detect vulnerabilities.
 
@@ -15,16 +15,26 @@ joern-mcp is the bridge. It translates MCP tool calls into CPGQL queries sent to
 ## Prerequisites
 
 - **Node.js** 18+
-- **Joern** installed and on PATH ([install guide](https://docs.joern.io/installation))
+- **JDK 21** (Joern targets 21 LTS; newer JDKs usually work but are unverified)
 
-Tested with Joern v4.x. The HTTP API has been stable since mid-2023.
+The Joern engine itself is **provisioned by this repo** (see Install). You do not
+install Joern separately or rely on it being on PATH — that ambient-PATH
+assumption caused a silent outage once (see [CHANGELOG](CHANGELOG.md) 0.2.0).
 
 ## Install
 
 ```bash
 bun install
 bun run build
+
+# Provision the pinned Joern engine into ~/tools/joern-mcp/joern (idempotent).
+# Joern is an OWNED dependency of this server, not an ambient prerequisite.
+scripts/install.sh
 ```
+
+Joern is pinned (currently **4.0.489**) because the CPGQL templates in
+`src/cpgql.ts` are tuned to a specific release. Override the version or location
+with the `JOERN_VERSION` / `JOERN_HOME` env vars.
 
 ## Register with Claude Code
 
@@ -34,7 +44,7 @@ claude mcp add joern-mcp -- node /path/to/joern-mcp/dist/index.js
 
 ## Usage
 
-1. Start Joern server: `joern --server`
+1. Start the Joern server: `scripts/start-server.sh`
 2. In a Claude Code session, use the tools:
 
 ```
@@ -55,6 +65,8 @@ query("cpg.method.name.l")
 
 | Environment Variable | Default | Purpose |
 |---------------------|---------|---------|
+| `JOERN_HOME` | `~/tools/joern-mcp/joern` | Provisioned Joern engine location (used by `scripts/`) |
+| `JOERN_VERSION` | `4.0.489` | Pinned Joern release `scripts/install.sh` provisions |
 | `JOERN_HOST` | `localhost` | Joern server hostname |
 | `JOERN_PORT` | `8080` | Joern server port |
 | `JOERN_QUERY_TIMEOUT` | `30000` | Query timeout in ms |

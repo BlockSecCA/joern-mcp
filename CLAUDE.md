@@ -11,7 +11,13 @@ Claude Code talks to this server, this server talks to Joern's HTTP API.
 Claude Code <--stdio--> joern-mcp (TypeScript) <--HTTP--> Joern server (JVM, port 8080)
 ```
 
-Joern is installed at `~/.local/share/joern/joern-cli/` and available as `joern` on PATH.
+Joern is an **owned dependency**, provisioned by `scripts/install.sh` (pinned version)
+into `~/tools/joern-mcp/joern/` — the runtime/artifact tree, not the XDG state tree.
+Start it with `scripts/start-server.sh`. It is **not** assumed to be on ambient PATH:
+that assumption, plus the engine living in `~/.local/share` (state), let it get wiped
+with no trace once while this bridge stayed registered-but-dead (see CHANGELOG 0.2.0).
+The MCP still does no process management — the scripts are operator helpers, the server
+is started out-of-band.
 
 ## Stack
 
